@@ -1,0 +1,166 @@
+import { fi } from "zod/locales";
+import { required } from "zod/mini";
+
+export default {
+  hello: "Halo",
+  switchLanguage: "Ganti Bahasa",
+  logout: "Keluar",
+  login: {
+    title: "telkomsigma",
+    subTitle: "Masuk ke sistem manajemen",
+    button: "Masuk",
+    success: "Masuk berhasil",
+    fail: "Masuk gagal",
+    form: {
+        username: {
+            placeholder: "Nama Pengguna",
+            required: "Silakan masukkan nama pengguna Anda!",
+        },
+        password: {
+            placeholder: "Kata Sandi",        
+            required: "Silakan masukkan kata sandi Anda!",
+        },
+    },
+  },
+  userManagement: {
+    user: {
+      title: "Manajemen Pengguna",
+      resetButton: "Atur Ulang",
+      saveButton: "Simpan",
+      createButton: "Buat Pengguna Baru",
+      fail: "Pembuatan pengguna gagal",
+      success: "Pembuatan pengguna berhasil",
+      editFail: "Pembaruan pengguna gagal",
+      editSuccess: "Pembaruan pengguna berhasil",
+      deleteConfirm: "Apakah Anda yakin ingin menghapus pengguna ini?",
+      deleteSuccess: "Pengguna berhasil dihapus", 
+      deleteFail: "Gagal menghapus pengguna",
+      createNewUser: "Buat Pengguna Baru",
+      editUser: "Sunting Pengguna",
+      form: {
+        username: {
+          label: "Nama Pengguna",
+          tooltip: "Ini adalah bidang wajib dan harus unik.",
+          placeholder: "masukkan nama pengguna Anda",
+          required: "Nama pengguna wajib diisi",
+        },
+        fullname: {
+          label: "Nama Lengkap",
+          placeholder: "masukkan nama lengkap Anda",
+          required: "Silakan masukkan nama lengkap Anda",
+        },
+        email: {
+          label: "Email",
+          tooltip: "Ini adalah bidang wajib dan harus unik.",
+          placeholder: "masukkan email Anda",
+          required: "Silakan masukkan alamat email yang valid",
+        },
+        password: {
+          label: "Kata Sandi",
+          placeholder: "ketik kata sandi Anda",
+          required: "Kata sandi wajib diisi",
+          minLength: "Minimal 6 karakter",
+        },
+        confirmPassword: {
+          label: "Konfirmasi Kata Sandi",
+          placeholder: "ketik ulang kata sandi Anda",
+          required: "Silakan konfirmasi kata sandi Anda",
+          mismatch: "Kedua kata sandi yang Anda masukkan tidak cocok!",
+        },
+        status: {
+          label: "Status",
+          placeholder: "Pilih status",
+          required: "Status wajib diisi",           
+        },
+        roles: {
+          label: "Role",
+          placeholder: "Pilih role",
+          required: "Silahkan pilih role",
+        },
+      },
+    },
+    role: {
+      title: "Manajemen Role",
+      resetButton: "Atur Ulang",
+      saveButton: "Simpan",
+      createButton: "Buat Role Baru",
+      fail: "Pembuatan role gagal",
+      success: "Pembuatan role berhasil",
+      editFail: "Pembaruan role gagal",
+      editSuccess: "Pembaruan role berhasil",
+      deleteConfirm: "Apakah Anda yakin ingin menghapus role ini?",
+      deleteSuccess: "Role berhasil dihapus", 
+      deleteFail: "Gagal menghapus role",
+      createNewRole: "Buat Role Baru",
+      editUser: "Sunting Role",
+      form: {
+        name: {
+          label: "Nama Role",
+          tooltip: "Ini adalah bidang wajib dan harus unik.",
+          placeholder: "masukkan nama role",
+          required: "Nama role wajib diisi",
+        },
+        description: {
+          label: "Deskripsi Role",
+          placeholder: "masukkan deskripsi role",
+          maxLength: "panjang maximum 500 karakter",
+        },        
+        menu: {
+          label: "Menu",
+          placeholder: "Silahkan pilih menu",
+          required: "Menu wajib diisi",
+        },
+      },
+    },
+    menu: {
+      title: "Manajemen Menu",
+      resetButton: "Atur Ulang",
+      saveButton: "Simpan",
+      createButton: "Buat Menu Baru",
+      fail: "Pembuatan menu gagal",
+      success: "Pembuatan menu berhasil",
+      editFail: "Pembaruan menu gagal",
+      editSuccess: "Pembaruan menu berhasil",
+      deleteConfirm: "Apakah Anda yakin ingin menghapus menu ini?",
+      deleteSuccess: "Menu berhasil dihapus", 
+      deleteFail: "Gagal menghapus menu",
+      createNewMenu: "Buat Menu Baru",
+      editUser: "Sunting Menu",
+      form: {
+        name: {
+          label: "Nama",
+          placeholder:"masukan nama menu",
+          required: "Nama menu wajib diisi",
+        },
+        path: {
+          label: "Path",
+          placeholder:"masukan path",
+          required: "Path wajib diisi",
+        },
+        icon: {
+          label: "Icon",
+          placeholder:"masukan nama icon",
+        },
+        sortOrder: {
+          label: "Urutan",
+          placeholder:"masukan urutan",
+        },
+        parent: {
+          label: "Parent Menu",
+          placeholder:"Silahkan pilih parent menu",
+        },
+        isActive: {
+          label: "Status",
+        },
+      },
+    },
+  },
+  showFilter: "Tampilkan Filter",
+  hideFilter: "Sembunyikan Filter",
+  find: "Cari",
+  clear: "Bersihkan",
+  showing: "Menampilkan",
+  of: "dari",
+  edit: "Sunting",
+  delete: "Hapus",
+};

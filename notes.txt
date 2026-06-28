@@ -1,0 +1,334 @@
+npm run dev
+npm install antd
+npm install @ant-design/pro-components
+npm install @ant-design/nextjs-registry
+npm install swr
+npm install @ant-design/cssinjs
+npm install @ant-design/v5-patch-for-react-19
+npm install jose
+npm install zod
+npm i typeorm reflect-metadata pg
+npm install bcryptjs
+npm install js-cookie
+npm install --save-dev @types/js-cookie
+
+
+
+
+
+
+
+
+
+
+
+
+
+#strukur File
+src/
+├── app/                     # Next.js App Router
+│   ├── layout.tsx           # Root layout
+│   ├── page.tsx             # Landing / Login / Home
+│   ├── (auth)/              # Group routes: authentication
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   ├── (admin)/             # Group routes: admin pages (protected)
+│   │   ├── layout.tsx       # Admin layout (ProLayout here)
+│   │   ├── dashboard/page.tsx
+│   │   ├── users/page.tsx
+│   │   └── settings/page.tsx
+│   └── api/                 # API routes
+│       ├── login/route.ts
+│       ├── logout/route.ts
+│       └── users/route.ts
+│
+├── components/              # UI shared components
+│   ├── common/              # Buttons, Cards, Forms, Modals
+│   ├── layout/              # ProLayout wrappers, Header, Sidebar
+│   └── charts/              # Reusable chart components
+│
+├── hooks/                   # Custom hooks
+│   ├── useAuth.ts
+│   └── useLang.ts
+│
+├── lib/                     # Core utilities & helpers
+│   ├── auth.ts              # session, jwt encrypt/decrypt
+│   ├── fetcher.ts           # swr/fetch wrapper
+│   ├── i18n.ts              # translation setup
+│   └── theme.ts             # Ant Design theme config
+│
+├── locales/                 # Translation JSON files
+│   ├── en.json
+│   └── id.json
+│
+├── services/                # Data Access Layer (DAL)
+│   ├── userService.ts       # API calls user
+│   ├── authService.ts       # API calls auth
+│   └── ...
+│
+├── store/                   # State management (Zustand/Jotai/Redux)
+│   └── userStore.ts
+│
+├── styles/                  # Global styles
+│   ├── globals.css
+│   └── overrides.less       # AntD custom overrides if pakai less
+│
+└── types/                   # TypeScript types
+    ├── user.ts
+    ├── auth.ts
+    └── index.ts
+
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+INSERT INTO users (username, email, password_hash, full_name)
+VALUES (
+  'admin',
+  'admin@example.com',
+  crypt('P@ssw0rd123', gen_salt('bf', 12)),
+  'Administrator'
+);
+
+
+
+🔹 Skema Enterprise Authentication & Authorization
+1. Users
+
+Menyimpan informasi dasar user.
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  username VARCHAR(100) UNIQUE NOT NULL,
+  email VARCHAR(150) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  full_name VARCHAR(150),
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
+
+2. Roles
+
+Role biasanya mewakili jabatan / fungsi.
+
+CREATE TABLE roles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) UNIQUE NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
+
+3. Permissions
+
+Permission adalah aksi granular (read, create, update, delete, approve, export, dll).
+
+CREATE TABLE permissions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  code VARCHAR(100) UNIQUE NOT NULL,   -- contoh: USER_READ, REPORT_EXPORT
+  description TEXT,
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
+
+4. Menus / Resources
+
+Opsional, dipakai untuk UI navigation. Bisa di-link ke permission.
+
+CREATE TABLE menus (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) NOT NULL,
+  path VARCHAR(200) NOT NULL,
+  icon VARCHAR(100),
+  parent_id UUID REFERENCES menus(id) ON DELETE CASCADE,
+  sort_order INT DEFAULT 0,         
+  is_active BOOLEAN DEFAULT true, 
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
+
+
+5. Relasi (Users ↔ Roles, Roles ↔ Permissions, Roles ↔ Menus)
+-- User bisa punya banyak Role
+CREATE TABLE user_roles (
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  role_id UUID REFERENCES roles(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, role_id)
+);
+
+-- Role punya banyak Permission
+CREATE TABLE role_permissions (
+  role_id UUID REFERENCES roles(id) ON DELETE CASCADE,
+  permission_id UUID REFERENCES permissions(id) ON DELETE CASCADE,
+  PRIMARY KEY (role_id, permission_id)
+);
+
+-- Role bisa punya akses ke menu
+CREATE TABLE role_menus (
+  role_id UUID REFERENCES roles(id) ON DELETE CASCADE,
+  menu_id UUID REFERENCES menus(id) ON DELETE CASCADE,
+  PRIMARY KEY (role_id, menu_id)
+);
+
+6. Audit Log (Enterprise Feature)
+
+Untuk compliance (SIEM, SOX, ISO, dsb).
+
+CREATE TABLE audit_logs (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  action VARCHAR(200) NOT NULL,        -- contoh: LOGIN_SUCCESS, USER_CREATE
+  resource VARCHAR(200),
+  ip_address VARCHAR(50),
+  user_agent TEXT,
+  created_at TIMESTAMP DEFAULT now()
+);
+
+🔹 Flow di Aplikasi
+
+Authentication
+
+Saat login → validasi username/password.
+
+Buat session/JWT berisi userId, roles, permissions.
+
+Authorization
+
+Dari JWT/session, load role & permission.
+
+Frontend: render menu berdasarkan role_menus.
+
+Backend: cek akses endpoint berdasarkan role_permissions.
+
+🔹 Contoh Payload JWT
+{
+  "sub": "user-uuid",
+  "username": "admin",
+  "roles": ["Admin", "Operator"],
+  "permissions": ["USER_READ", "USER_CREATE", "REPORT_EXPORT"],
+  "exp": 1734493371
+}
+
+
+⚡ Dengan struktur ini:
+
+Bisa multi-role per user.
+
+Bisa granular permission per menu/action.
+
+Bisa audit semua aksi.
+
+Cocok untuk enterprise-grade RBAC.
+
+Mau saya buatkan langsung versi Prisma schema-nya biar tinggal npx prisma migrate dev dan dipakai di Next.js kamu?
+
+
+
+
+
+--------------
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  username     String      @unique @db.VarChar(100)
+  email        String      @unique @db.VarChar(150)
+  passwordHash String      @map("password_hash")
+  fullName     String?     @db.VarChar(150) @map("full_name")
+  isActive     Boolean     @default(true) @map("is_active")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @default(now()) @map("updated_at")
+
+  roles        UserRole[]
+  auditLogs    AuditLog[]
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique @db.VarChar(100)
+  description String?
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @default(now()) @map("updated_at")
+
+  users       UserRole[]
+  permissions RolePermission[]
+  menus       RoleMenu[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  code        String           @unique @db.VarChar(100)
+  description String?
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @default(now()) @map("updated_at")
+
+  roles       RolePermission[]
+}
+
+model Menu {
+  id        String      @id @default(uuid())
+  name      String      @db.VarChar(100)
+  path      String      @db.VarChar(200)
+  icon      String?     @db.VarChar(100)
+  parentId  String?     @map("parent_id")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @default(now()) @map("updated_at")
+
+  parent    Menu?       @relation("MenuHierarchy", fields: [parentId], references: [id])
+  children  Menu[]      @relation("MenuHierarchy")
+  roles     RoleMenu[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model RoleMenu {
+  roleId String
+  menuId String
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, menuId])
+  @@map("role_menus")
+}
+
+model AuditLog {
+  id        BigInt   @id @default(autoincrement())
+  userId    String?  @map("user_id")
+  action    String   @db.VarChar(200)
+  resource  String?  @db.VarChar(200)
+  ipAddress String?  @db.VarChar(50) @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}

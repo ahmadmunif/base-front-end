@@ -1,0 +1,38 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ant-design/cssinjs": "^1.24.0",
+    "@ant-design/nextjs-registry": "^1.1.0",
+    "@ant-design/pro-components": "^2.8.10",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "antd": "^5.27.0",
+    "bcryptjs": "^3.0.2",
+    "jose": "^6.0.12",
+    "js-cookie": "^3.0.5",
+    "next": "15.4.6",
+    "pg": "^8.16.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "reflect-metadata": "^0.2.2",
+    "swr": "^2.3.6",
+    "typeorm": "^0.3.26",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20",
+    "@types/react": "^19.1.1",
+    "@types/react-dom": "^19.1.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
